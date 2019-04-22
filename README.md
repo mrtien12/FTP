@@ -1,10 +1,11 @@
 # FTP
-**Problem Statement:-** The aim of this project is to implement FTP application between a server and a client. The application is a console based application and is implemented using Unix Sockets. The project is developed in C++ language.
+**Problem Statement:-** The aim of this project is to implement FTP application between a server and a client. The application is a console based application and is implemented using Unix Sockets. 
+
+The project is developed in **C++** language.
 
 ## Following FTP Commands are implemented:-
 
 **1.	USER**  This command sends the user identification to the server.
-
 **2.	PASS**  This command sends the user password to the server.
 
 **3.  MKD**   This command causes the directory specified in the path name to be created as a directory.
@@ -19,7 +20,7 @@
 
 **8.	STOR**  This command causes to store a file into the current directory of the remote host.
 
-**9.	LIST**  ends a request to display the list of all the files present in the directory.
+**9.	LIST**  This command sends a request to display the list of all the files present in the directory.
 
 **10.	ABOR**  This command tells the server to abort the previous FTP service command and any associated transfer of data.
 
