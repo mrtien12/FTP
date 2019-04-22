@@ -1,7 +1,7 @@
 # FTP
 **Problem Statement:-** The aim of this project is to implement FTP application between a server and a client. The application is a console based application and is implemented using Unix Sockets. 
 
-The project is developed in **C++** language.
+This project is developed in **C++** language.
 
 ## Following FTP Commands are implemented:-
 
@@ -28,14 +28,14 @@ The project is developed in **C++** language.
 **11.	QUIT:-**  This command terminates a USER and if file transfer is not in progress, the server closes the connection.
 
 ## Some of the FTP replies are:-
-**1.	200**	  Command okay.
+**1.	200:-**	  Command okay.
 
-**2.	530** 	Not logged in.
+**2.	530:-** 	Not logged in.
 
-**3.	331** 	User name okay, need password.
+**3.	331:-** 	User name okay, need password.
 
-**4.	225** 	Data connection open; no transfer in progress.
+**4.	225:-** 	Data connection open; no transfer in progress.
 
-**5.	502** 	Command not implemented.
+**5.	502:-** 	Command not implemented.
 
-**6.	503** 	Bad sequence of commands.
+**6.	503:-** 	Bad sequence of commands.
