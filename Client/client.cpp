@@ -91,10 +91,6 @@ int main(int argc, char **argv)
   ss>>word1;
   ss>>word2;
   word=const_cast<char *>(word1.c_str());
-  // cout<<"\nsendline: "<<sendline<<endl;
-  // cout<<"\nword1: "<<word1;
-  // cout<<"\nword: "<<word;
-  // cout<<"\nword2: "<<word2;
 
    if (strcmp("QUIT\n",sendline)==0) 
     {
