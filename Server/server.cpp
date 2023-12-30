@@ -10,12 +10,54 @@
 #include<sys/sendfile.h>
 #include<fcntl.h>
 #include <unistd.h>
-#include <unistd.h>
+#include </home/quirky/FTP/sqlite/sqlite3.h>
+
 #define MAXLINE 4096 /*max text line length*/
 #define LISTENQ 8 /*maximum number of client connections*/
 using namespace std;
 bool AUTHORIZED=0;
 bool USERNAME=0;
+string SERVER = "/home/quirky/FTP/Server/";
+
+
+
+
+void exc_query_sign_in(string directoryPath,string username){
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
+	string sql;
+	string path = directoryPath;
+	string user = username;
+	string finalPath = path + "/" + user;
+	string permission = "ACD";
+	/* Open database */
+
+	//check if the directory exists
+
+	
+	
+	rc = sqlite3_open( (SERVER + "user.db").c_str(), &db);
+	if( rc ){
+		cerr<<"Can't open database: "<<sqlite3_errmsg(db)<<endl;
+		
+	}else{
+		cout<<"Opened database successfully"<<endl;
+	}
+	/* Create SQL statement */
+	sql = "INSERT INTO permission (username,path,permission) VALUES ('"+user+"','"+finalPath+"','"+permission+"');";
+	/* Execute SQL statement */
+	rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		cerr<<"SQL error: "<<zErrMsg<<endl;
+		sqlite3_free(zErrMsg);
+	}else{
+		cout<<"Records created successfully"<<endl;
+	}
+	sqlite3_close(db);
+	
+	
+}
 
 int main (int argc, char **argv)
 {
@@ -86,11 +128,12 @@ int main (int argc, char **argv)
 		   		cout<<"Command received from user "<<username<<": "<< buf;
 		   else
 		   		cout<<"Command received from user: "<<buf;
-
+				
 		   cout<<"Processing......\n";
 		   char *token,*dummy;
 		   dummy=buf;
 		   token=strtok(dummy," ");
+		
 
 		   if (strcmp("QUIT\n",token)==0)  
 		   {
@@ -105,12 +148,26 @@ int main (int argc, char **argv)
 		   else if(strcmp("ABORT\n",token)==0)
 		   {
 		   		//cout<<"\nComing in abort";
-		   		USERNAME=0;
+		   		USERNAME=0; 
 		   		AUTHORIZED=0;
 		   		send(connfd,"200 Command Okay\nSuccessfully logged out!\n",MAXLINE,0);
 
 		   }
 
+		   else if (strcmp("SIGN",token) == 0){
+
+					cout << token << endl;
+					// token = strtok(NULL," \n");
+					// cout << "Username: " << token << endl;
+					// token = strtok(NULL," \n");
+					// cout << "Password: " << token << endl;
+					send(connfd,"200, Command Okay\n",MAXLINE,0);
+					
+				
+		
+
+					
+		   }
 		   else if (strcmp("USER",token)==0) 
 		    {
 		    	token=strtok(NULL," \n");
@@ -155,7 +212,9 @@ int main (int argc, char **argv)
 									if(strcmp(token,password.c_str())==0)
 									{
 										AUTHORIZED=1;
+										goto done ;
 										send(connfd,"\n200, Command okay\nUser has been successfully logged in\n",MAXLINE,0);
+										
 									}
 									else
 									{
@@ -165,7 +224,7 @@ int main (int argc, char **argv)
 								    }
 								    file.close();
 								    //cout<<"closing file   "<<endl;
-								    goto done;
+								    
 
 								}
 								file>>password;
@@ -173,7 +232,40 @@ int main (int argc, char **argv)
 					
 				}
 				send(connfd,"503, Bad sequence of commands.\n First tell username then password for successful log in\n",MAXLINE,0);
-				done:{}
+				done:
+				// so now i need to log in to the directory with the same name as the username, check if it exists if not create it, next query and add the path and the user to path,user column in the database with full permission in permission column
+				
+					char directory[MAXLINE];
+					char current[MAXLINE];
+					// Check if the directory exists
+					getcwd(current,MAXLINE-20);
+					strcat(directory,current);
+					string truepath = directory;
+					string directoryPath = directory + '/' + username; // Replace with the actual directory path
+					send(connfd,directoryPath.c_str(),MAXLINE,0);
+					if (access(directoryPath.c_str(), F_OK) == -1) {
+						// Directory does not exist, create it
+						int result = mkdir(directoryPath.c_str(), 0777); // Replace with the desired permissions
+						if (result != 0) {
+							send(connfd,"Error creating folder",MAXLINE,0);
+						}
+					}
+
+				// Change the current working directory to the user's directory
+					int result = chdir(directoryPath.c_str());
+					if (result != 0) {
+						send(connfd,"Error changing directory",MAXLINE,0);
+						continue;
+					}
+					
+					
+					exc_query_sign_in(truepath,username);
+
+				
+				
+				
+
+
 			}
 
 			else if(!AUTHORIZED)

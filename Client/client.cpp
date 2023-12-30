@@ -35,6 +35,7 @@ int main(int argc, char **argv)
  cout<<"\n----------------------------------------------------\n\n";
  ;
  cout<<"\n    USER – This command sends the user identification to the server.\n\
+	SIGN – This command sends the user identification to the server.\n\
     PASS – This command sends the user password to the server.\n\
     MKD – This command causes the directory specified in the path name to be created as a directory.\n\
     CWD – This command allows the user to change the current working directory to the path specified with the command.\n\
@@ -106,12 +107,23 @@ int main(int argc, char **argv)
    		recv(sockfd,response,MAXLINE,0);
    		cout<<response;
 
-   } 
+   }
+   else if (strcmp("SIGN",word)==0)  
+   {
+
+   	//cout<<endl<<sendline<<endl;
+   	send(sockfd, sendline, MAXLINE, 0);
+	recv(sockfd,response,MAXLINE,0);
+	cout << response;
+   }
+
+   
    else if (strcmp("USER",word)==0)  
    {
 
    	//cout<<endl<<sendline<<endl;
    	send(sockfd, sendline, MAXLINE, 0);
+	cout << sendline;
 	recv(sockfd,response,MAXLINE,0);
 	if(strcmp("0",response)==0)
 	{
