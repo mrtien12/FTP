@@ -11,10 +11,10 @@ server.o:
 
 
 runs:
-	./Server/server 5500
+	@$(MAKE) -C Server runs
 
 runc:
-	./Client/client 127.0.0.1 5500
+	./Client/client 127.0.0.1 5501
 
 clean:
 	rm -f Server/*.o

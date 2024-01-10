@@ -13,19 +13,43 @@
 #define SERVER_PORT 5550
 #define BUFF_SIZE 1024
 
-void send_msg(int sockfd, const char *msg) {
+void send_msg(int sockfd, const char *msg)
+{
     size_t msg_len = strlen(msg);
     ssize_t sent_bytes = send(sockfd, msg, msg_len, 0);
-    if (sent_bytes < 0) {
+    if (sent_bytes < 0)
+    {
         perror("\nError: ");
         exit(EXIT_FAILURE);
     }
 }
 
+void send_file(int client_sock, char *filepath)
+{
+    FILE *fp = fopen(filepath, "rb");
+    if (fp != NULL)
+    {
+        char send_buff[BUFF_SIZE];
+        while (1)
+        {
+            int read_bytes = fread(send_buff, 1, sizeof(send_buff), fp);
+            if (read_bytes == 0)
+            {
+                break;
+            }
+            int sent = send(client_sock, send_buff, sizeof(send_buff), 0);
+            if (sent < 0)
+            {
+                perror("\nError: ");
+            }
+        }
+    }
+    fclose(fp);
+}
 
 int main(int argc, char *argv[])
-{   
-        if (argc != 3)
+{
+    if (argc != 3)
     {
         fprintf(stderr, "Usage: %s <server_ip> <port_number>\n", argv[0]);
         return 0;
@@ -70,20 +94,19 @@ int main(int argc, char *argv[])
     {
         // Send row 2
         printf("\nEnter string to send: ");
-        memset(buff, '\0', (strlen(buff) + 1));
+        memset(buff, '\0', 1024);
         fgets(buff, BUFF_SIZE, stdin);
         msg_len = strlen(buff);
 
-        sent_bytes = send(client_sock, buff, msg_len, 0);
-
-        if (strncmp(buff, "STOR", 4) == 0) {
+        if (strncmp(buff, "STOR", 4) == 0)
+        {
             // STOR command handling
             char filename[100];
             sscanf(buff, "STOR %s", filename);
-
             // Open the file for reading
             FILE *file = fopen(filename, "rb");
-            if (!file) {
+            if (!file)
+            {
                 printf("Failed to open file: %s\n", filename);
                 continue; // Continue to the next iteration
             }
@@ -91,26 +114,18 @@ int main(int argc, char *argv[])
             // Get the file size
             fseek(file, 0, SEEK_END);
             int size = ftell(file);
-            fseek(file, 0, SEEK_SET);
 
-            // Send the STOR command with the file size
-            send_msg(client_sock, basename(filename));
-            
-            // Send the file size to the server
-            send(client_sock, &size, sizeof(int), 0);
-
-            // Read and send the file content in chunks
-            char buffer[BUFF_SIZE];
-            size_t bytesRead;
-            while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-                send(client_sock, buffer, bytesRead, 0);
-            }
-
+            sprintf(buff, "STOR %s %ld", basename(filename), size);
             fclose(file);
+            sent_bytes = send(client_sock, buff, strlen(buff), 0);
+            send_file(client_sock, filename);
         }
-
-        if (sent_bytes < 0)
-            perror("\nError: ");
+        else
+        {
+            sent_bytes = send(client_sock, buff, strlen(buff), 0);
+            if (sent_bytes < 0)
+                perror("\nError: ");
+        }
         // receive echo reply
         received_bytes = recv(client_sock, buff, BUFF_SIZE, 0);
         if (received_bytes < 0)
@@ -121,8 +136,8 @@ int main(int argc, char *argv[])
             break;
         }
         else
-        {   
-            
+        {
+
             buff[received_bytes] = '\0';
             printf("Reply from server: %s", buff);
         }
@@ -131,4 +146,3 @@ int main(int argc, char *argv[])
     close(client_sock);
     return 0;
 }
-

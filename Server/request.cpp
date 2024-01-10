@@ -124,14 +124,14 @@ int command_handle(char *request, int connfd, int *login_state, char *user)
     }
     else if (strcmp("LIST", cmd) == 0)
     {
-        
-        switch(list(user, login_state,connfd)){
-            case 0: 
-                return send_msg(connfd, "Not login\n");
-            case 1:
-                return send_msg(connfd, "200, Command Okay\n");
+
+        switch (list(user, login_state, connfd))
+        {
+        case 0:
+            return send_msg(connfd, "Not login\n");
+        case 1:
+            return send_msg(connfd, "200, Command Okay\n");
         }
-        
     }
 
     else if (strcmp("PWD\n", request) == 0)
@@ -190,44 +190,15 @@ int command_handle(char *request, int connfd, int *login_state, char *user)
 
     else if (strcmp("STOR", cmd) == 0)
     {
-        
-                // Receive the filename from the client
-            char filename[1000];
-            recv(connfd, filename, sizeof(filename),0);
-            // Receive the file size from the client
-            int size;
-            recv(connfd, &size, sizeof(int), 0);
+        char filename[1000];
+        int size;
+        sscanf(request, "STOR %s %d", &filename, &size);
 
-            // Open a file on the server for writing
-            FILE *file = fopen(filename, "wb");
-            printf(filename+'\n');
-            if (!file)
-            {
-                send_msg(connfd, "550 Failed to create file on server\n");
-                return 0;
-            }
-
-            // Receive and write the file content in chunks
-            char buffer[BUFF_SIZE];
-            size_t totalReceived = 0;
-            while (totalReceived < size)
-            {
-                ssize_t bytesRead = recv(connfd, buffer, sizeof(buffer), 0);
-                if (bytesRead <= 0)
-                {
-                    perror("Error receiving file\n");
-                    fclose(file);
-                    return 0;
-                }
-
-                fwrite(buffer, 1, bytesRead, file);
-                totalReceived += bytesRead;
-            }
-
-            fclose(file);
-            send_msg(connfd, "200 Command Okay\nFile received successfully\n");
-                
-            
+        if(store(connfd, filename, size) == 0){
+        send_msg(connfd, "200 Command Okay\nFile received successfully\n");
+        }else{
+             send_msg(connfd, "File received got an error\n");
+        }
     }
 
     else if (strcmp("RETR", cmd) == 0)
