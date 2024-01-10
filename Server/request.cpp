@@ -124,23 +124,14 @@ int command_handle(char *request, int connfd, int *login_state, char *user)
     }
     else if (strcmp("LIST", cmd) == 0)
     {
-
-        // while((des=readdir(dr))!=NULL)
-        // {
-        //   strcat(lslist,de->d_name);
-        //   strcat(lslist,"\n");
-        // }
-        // closedir(dir);
-        // send(connfd,&lslist,sizeof(lslist),0);
-
-        // system("ls >t.txt");
-        // i = 0;
-        // stat("t.txt", &obj);
-        // size = obj.st_size;
-        // sprintf(str, "%d", size);
-        // send(connfd, str, MAXLINE, 0);
-        // filehandle = open("t.txt", O_RDONLY);
-        // sendfile(connfd, filehandle, NULL, size);
+        
+        switch(list(user, login_state,connfd)){
+            case 0: 
+                return send_msg(connfd, "Not login\n");
+            case 1:
+                return send_msg(connfd, "200, Command Okay\n");
+        }
+        
     }
 
     else if (strcmp("PWD\n", request) == 0)
@@ -199,33 +190,44 @@ int command_handle(char *request, int connfd, int *login_state, char *user)
 
     else if (strcmp("STOR", cmd) == 0)
     {
+        
+                // Receive the filename from the client
+            char filename[1000];
+            recv(connfd, filename, sizeof(filename),0);
+            // Receive the file size from the client
+            int size;
+            recv(connfd, &size, sizeof(int), 0);
 
-        int c = 0, len, *size;
-        char *f;
-        char filename[100];
-        sscanf(request, "STOR %s", filename);
-        // cout<<"filename: "<<filename<<endl;
-        recv(connfd, &size, sizeof(int), 0);
-        // cout<<"size is : "<<size<<endl;
+            // Open a file on the server for writing
+            FILE *file = fopen(filename, "wb");
+            printf(filename+'\n');
+            if (!file)
+            {
+                send_msg(connfd, "550 Failed to create file on server\n");
+                return 0;
+            }
 
-        // int i = 1;
-        // while (1)
-        // {
-        //     filehandle = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0666);
-        //     if (filehandle == -1)
-        //     {
-        //         sprintf(filename + strlen(filename), "%d", i);
-        //     }
-        //     else
-        //         break;
-        // }
-        // f = (char *)malloc(size);
-        // recv(connfd, f, size, 0);
-        // c = write(filehandle, f, size);
-        // sprintf(str, "%d", c);
-        // // cout<<str;
-        // close(filehandle);
-        // send(connfd, str, MAXLINE, 0);
+            // Receive and write the file content in chunks
+            char buffer[BUFF_SIZE];
+            size_t totalReceived = 0;
+            while (totalReceived < size)
+            {
+                ssize_t bytesRead = recv(connfd, buffer, sizeof(buffer), 0);
+                if (bytesRead <= 0)
+                {
+                    perror("Error receiving file\n");
+                    fclose(file);
+                    return 0;
+                }
+
+                fwrite(buffer, 1, bytesRead, file);
+                totalReceived += bytesRead;
+            }
+
+            fclose(file);
+            send_msg(connfd, "200 Command Okay\nFile received successfully\n");
+                
+            
     }
 
     else if (strcmp("RETR", cmd) == 0)
