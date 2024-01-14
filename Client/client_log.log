@@ -1,0 +1,304 @@
+[2024-01-11 02:53:49] Login success
+
+[2024-01-11 07:05:22] Login success
+
+[2024-01-11 07:05:36] 200, Command Okay
+
+[2024-01-11 07:05:46] account.txt
+client.txt
+hight.txt
+king.txt
+lmao.txt
+log.txt
+tienvodich
+
+[2024-01-11 07:47:48] Login success
+
+[2024-01-11 07:56:52] Login success
+
+[2024-01-11 07:57:09] File not found
+
+[2024-01-11 07:57:22] RETR account.txt 239
+[2024-01-11 07:59:32] Login success
+
+[2024-01-11 08:02:37] Login success
+
+[2024-01-11 08:10:52] Login success
+
+[2024-01-11 10:05:13] Login success
+
+[2024-01-11 10:05:32] 
+502, Command not implemented
+[2024-01-11 10:05:50] RETR account.txt 239
+[2024-01-11 10:16:39] Login success
+
+[2024-01-11 10:18:18] Login success
+
+[2024-01-11 10:32:17] Login success
+
+[2024-01-11 10:36:21] Login success
+
+[2024-01-11 10:36:25] 200 Command Okay
+Successfully logged out!
+
+[2024-01-11 10:37:17] Login success
+
+[2024-01-11 10:37:22] 200 Command Okay
+Successfully logged out!
+
+[2024-01-11 10:40:27] Login success
+
+[2024-01-11 10:40:33] account.txt
+client.txt
+hight.txt
+king.txt
+lmao.txt
+log.txt
+tienvodich
+
+[2024-01-11 10:40:39] 200, Command Okay
+
+[2024-01-11 10:40:41] 200 Command Okay
+Successfully logged out!
+
+[2024-01-11 10:40:48] Not login
+
+[2024-01-11 10:40:50] Not login
+
+[2024-01-11 10:42:09] Not login
+
+[2024-01-11 10:42:50] Not login
+
+[2024-01-11 10:45:43] Login success
+
+[2024-01-11 10:45:55] 200 Command Okay
+Successfully logged out!
+
+[2024-01-11 14:22:58] 200, Command Okay
+
+[2024-01-11 14:23:08] Login success
+
+[2024-01-11 14:40:06] Login success
+
+[2024-01-11 14:53:05] Account already exist
+
+[2024-01-11 15:15:42] Login success
+
+[2024-01-11 15:15:55] 200 Command Okay
+File received successfully
+
+[2024-01-11 15:19:49] 200, Command Okay
+
+[2024-01-11 15:20:26] Login success
+
+[2024-01-11 15:21:23] Login success
+
+[2024-01-11 15:21:37] account.txt
+client.txt
+fixer
+hight.txt
+king.txt
+lmao.txt
+log.txt
+
+[2024-01-11 15:22:33] 200, Command Okay
+
+[2024-01-11 15:22:41] 200, Command Okay
+
+[2024-01-11 15:23:45] 200, Command Okay
+
+[2024-01-11 15:24:00] 200 Command Okay
+File received successfully
+
+[2024-01-11 15:27:48] Login success
+
+[2024-01-11 15:27:52] account.txt
+checekingwave.txt
+client.txt
+hight.txt
+king.txt
+lmao.txt
+
+[2024-01-11 15:27:59] 200, Command Okay
+
+[2024-01-11 15:28:59] 
+502, Command not implemented
+[2024-01-11 15:29:20] 200, Command Okay
+
+[2024-01-12 12:42:40] Login success
+
+[2024-01-14 23:12:33] Account not found
+
+[2024-01-14 23:13:19] Account not found
+
+[2024-01-14 23:29:47] Login success
+
+[2024-01-14 23:33:43] Login success
+
+[2024-01-14 23:34:04] Login success
+
+[2024-01-14 23:34:41] Login success
+
+[2024-01-14 23:41:48] Login success
+
+[2024-01-14 23:42:14] Login success
+
+[2024-01-14 23:44:11] Login success
+
+[2024-01-14 23:46:43] Login success
+
+[2024-01-14 23:49:32] account.txt
+admin
+a.txt
+database
+database.cpp
+database.txt
+hello
+lmao
+logic_handle.cpp
+logic_handle.h
+logic_handle.o
+login_details.txt
+Makefile
+mohit
+request.cpp
+request.h
+request.o
+server
+server.cpp
+server.o
+t.txt
+
+[2024-01-14 23:56:03] 200, Command Okay
+
+[2024-01-14 23:58:11] Login success
+
+[2024-01-15 00:01:38] 200 Command Okay
+File received successfully
+
+[2024-01-15 00:03:57] File not found
+
+[2024-01-15 00:04:38] File not found
+
+[2024-01-15 00:05:00] account.txt
+admin
+a.txt
+checekingwave.txt
+database
+database.cpp
+database.txt
+hello
+king
+lmao
+logic_handle.cpp
+logic_handle.h
+logic_handle.o
+login_details.txt
+Makefile
+mohit
+request.cpp
+request.h
+request.o
+server
+server.cpp
+server.o
+t.txt
+
+[2024-01-15 00:07:00] Login success
+
+[2024-01-15 00:07:01] account.txt
+admin
+a.txt
+checekingwave.txt
+database
+database.cpp
+database.txt
+hello
+king
+lmao
+logic_handle.cpp
+logic_handle.h
+logic_handle.o
+login_details.txt
+Makefile
+mohit
+request.cpp
+request.h
+request.o
+server
+server.cpp
+server.o
+t.txt
+
+[2024-01-15 00:08:52] Login success
+
+[2024-01-15 00:08:54] account.txt
+admin
+a.txt
+checekingwave.txt
+database
+database.cpp
+database.txt
+hello
+king
+lmao
+logic_handle.cpp
+logic_handle.h
+logic_handle.o
+login_details.txt
+Makefile
+mohit
+request.cpp
+request.h
+request.o
+server
+server.cpp
+server.o
+t.txt
+
+[2024-01-15 00:10:18] Login success
+
+[2024-01-15 00:10:25] account.txt
+admin
+a.txt
+checekingwave.txt
+database
+database.cpp
+database.txt
+hello
+king
+lmao
+logic_handle.cpp
+logic_handle.h
+logic_handle.o
+login_details.txt
+Makefile
+mohit
+request.cpp
+request.h
+request.o
+server
+server.cpp
+server.o
+t.txt
+
+[2024-01-15 00:16:01] 200, Command Okay
+
+[2024-01-15 00:16:39] RETR a.txt 7375
+
+[2024-01-15 00:17:16] Login success
+
+[2024-01-15 00:17:28] RETR account.txt 239
+
+[2024-01-15 00:20:07] 200, Command Okay
+
+[2024-01-15 00:20:52] 200, Command Okay
+
+[2024-01-15 00:21:51] 200, Command Okay
+
+[2024-01-15 00:22:39] 200, Command Okay
+
+[2024-01-15 00:23:27] 200, Command Okay
+
+[2024-01-15 00:25:02] 200, Command Okay
+

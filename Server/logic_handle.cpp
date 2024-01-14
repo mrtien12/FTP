@@ -7,9 +7,32 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/socket.h>
-
+#define BUFF_SIZE 1024
 using namespace std;
-
+void send_file(int client_sock, char *filepath)
+{
+    printf("Sending\n");
+    FILE *fp = fopen(filepath, "rb");
+    if (fp != NULL)
+    {
+        char send_buff[BUFF_SIZE];
+        while (1)
+        {
+            int read_bytes = fread(send_buff, 1, sizeof(send_buff), fp);
+            printf("Sending\n");
+            if (read_bytes == 0)
+            {
+                break;
+            }
+            int sent = send(client_sock, send_buff, sizeof(send_buff), 0);
+            if (sent < 0)
+            {
+                perror("\nError: ");
+            }
+        }
+    }
+    fclose(fp);
+}
 int signup(char *usename, char *password)
 {
     FILE *fr = fopen("login_details.txt", "r");
@@ -23,7 +46,7 @@ int signup(char *usename, char *password)
         }
     }
     fclose(fr);
-    cout << "dmm ok chua\n";
+
     FILE *fa = fopen("login_details.txt", "a");
     fprintf(fa, "\n%s %s", usename, password);
     fclose(fa);
@@ -47,8 +70,13 @@ int login(char *usename, char *password, int *login_state, char *user)
 {
     if (*login_state)
         return 3;
+    printf("hello\n");
     FILE *fr = fopen("login_details.txt", "r");
+    printf("hello\n");
     char line[1024], check_name[30], check_pass[30];
+    memset(line, '\0', 1024);
+    memset(check_name, '\0', 30);
+    memset(check_name, '\0', 30);
     while (fgets(line, 1024, fr) != NULL)
     {
         sscanf(line, "%s %s", check_name, check_pass);
@@ -58,6 +86,7 @@ int login(char *usename, char *password, int *login_state, char *user)
             if (!strcmp(password, check_pass))
             {
                 fclose(fr);
+                char cmd[1000];
                 *login_state = 1;
                 memset(user, '\0', 30);
                 strcpy(user, usename);
@@ -67,10 +96,12 @@ int login(char *usename, char *password, int *login_state, char *user)
                 strcpy(directory_path, path);
                 strcat(directory_path, "/");
                 strcat(directory_path, usename);
-                chdir(directory_path);
+                sprintf(cmd, "cd %s\0", usename);
+                // strcat(cmd,directory_path);
                 getcwd(path, PATH_MAX);
-                // sprintf(,"%s/%s", getcwd(path, PATH_MAX), usename);
-                cout << path << "\n";
+                system(cmd);
+                // sprintf(cmd,"%s/%s", getcwd(path, PATH_MAX), usename);
+                cout << cmd << "\n";
                 return 0;
             }
             fclose(fr);
@@ -148,7 +179,9 @@ int store(int conn_sock, char *filepath, int filesize)
                 }
                 received_bytes += ret;
                 fwrite(recv_buff, 1, ret, fp);
-            }else{
+            }
+            else
+            {
                 int ret = recv(conn_sock, recv_buff, filesize - received_bytes, 0);
                 if (ret < 0)
                 {
@@ -162,4 +195,142 @@ int store(int conn_sock, char *filepath, int filesize)
     }
     fclose(fp);
     return 0;
+}
+
+int deletefile(char *usename, char *filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        char cmd[1000];
+        sprintf(cmd, "rm -r %s", filename);
+        int ret = system(cmd);
+        if (ret)
+        {
+            return 1;
+        }
+        else
+            return 2;
+    }
+}
+
+int renamefile(char *usename, char *filename, char *new_filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        char cmd[1000];
+        sprintf(cmd, "mv %s %s", filename, new_filename);
+        int ret = system(cmd);
+        if (ret)
+        {
+            return 1;
+        }
+        else
+            return 2;
+    }
+}
+
+int mkadir(char *usename, char *filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        char cmd[1000];
+        sprintf(cmd, "mkdir %s", filename);
+        int ret = system(cmd);
+        if (ret)
+        {
+            return 1;
+        }
+        else
+            return 2;
+    }
+}
+
+int copy(char *usename, char *filename, char *new_filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        char cmd[1000];
+        sprintf(cmd, "cp %s %s", filename, new_filename);
+        int ret = system(cmd);
+        if (ret)
+        {
+            return 1;
+        }
+        else
+            return 2;
+    }
+}
+
+int move(char *usename, char *filename, char *new_filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        char cmd[1000];
+        sprintf(cmd, "mv %s %s", filename, new_filename);
+        int ret = system(cmd);
+        if (ret)
+        {
+            return 1;
+        }
+        else
+            return 2;
+    }
+}
+
+int download(char *usename, char *filename, int *login_state, int connfd)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        FILE *fp = fopen(filename, "rb");
+        if (fp == NULL)
+        {
+            perror("\nError");
+            return 1;
+        }
+        int sent_bytes;
+        char buff[1024];
+        fseek(fp, 0, SEEK_END);
+        int size = ftell(fp);
+        sprintf(buff, "RETR %s %ld", basename(filename), size);
+        sent_bytes = send(connfd, buff, sizeof(buff), 0);
+        send_file(connfd, filename);
+        return 2;
+    }
+}
+
+int quit(int *login_state)
+{
+    if (!*login_state)
+    {
+        return 0;
+    }
+    else
+    {
+        *login_state = 0;
+        return 1;
+    }
 }
