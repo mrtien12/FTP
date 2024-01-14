@@ -9,9 +9,78 @@
 #include <string.h>
 #include <unistd.h>
 #include <libgen.h>
+#include <sys/stat.h>
+#include <time.h>  // for timestamp in the log file
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 5550
 #define BUFF_SIZE 1024
+
+int is_folder(const char *path) {
+    struct stat pathStat;
+    if (stat(path, &pathStat) == 0) {
+        return S_ISDIR(pathStat.st_mode);
+    }
+    return 0;
+}
+
+
+int store(int conn_sock, char *filepath, int filesize)
+{
+    FILE *fp = fopen(filepath, "wb");
+    if (fp == NULL)
+    {
+        perror("\nError");
+    }
+    else
+    {
+        char recv_buff[1024];
+        unsigned long received_bytes = 0;
+        while (received_bytes < filesize)
+        {
+            if (filesize - received_bytes > 1024)
+            {
+                int ret = recv(conn_sock, recv_buff, 1024, 0);
+                if (ret < 0)
+                {
+                    perror("\nLost data:");
+                    return 1;
+                }
+                received_bytes += ret;
+                fwrite(recv_buff, 1, ret, fp);
+            }else{
+                int ret = recv(conn_sock, recv_buff, filesize - received_bytes, 0);
+                if (ret < 0)
+                {
+                    perror("\nLost data:");
+                    return 1;
+                }
+                received_bytes += ret;
+                fwrite(recv_buff, 1, ret, fp);
+            }
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
+void log_response(const char *response) {
+    FILE *log_file = fopen("client_log.log", "a");  // Open or create log file in append mode
+    if (log_file != NULL) {
+        time_t t;
+        struct tm *tm_info;
+
+        time(&t);
+        tm_info = localtime(&t);
+
+        fprintf(log_file, "[%04d-%02d-%02d %02d:%02d:%02d] %s\n",
+                tm_info->tm_year + 1900, tm_info->tm_mon + 1, tm_info->tm_mday,
+                tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec, response);
+
+        fclose(log_file);
+    } else {
+        perror("\nError opening log file: ");
+    }
+}
 
 void send_msg(int sockfd, const char *msg)
 {
@@ -105,7 +174,7 @@ int main(int argc, char *argv[])
             sscanf(buff, "STOR %s", filename);
             // Open the file for reading
             FILE *file = fopen(filename, "rb");
-            if (!file)
+            if (!file || is_folder(filename))
             {
                 printf("Failed to open file: %s\n", filename);
                 continue; // Continue to the next iteration
@@ -120,6 +189,16 @@ int main(int argc, char *argv[])
             sent_bytes = send(client_sock, buff, strlen(buff), 0);
             send_file(client_sock, filename);
         }
+        
+        else if(strncmp(buff,"RETR", 4) == 0){
+            char filename[100];
+            sscanf(buff, "RETR %s", filename);
+            sprintf(buff, "RETR %s", filename);
+            send_msg(client_sock, buff);
+            
+        }
+
+
         else
         {
             sent_bytes = send(client_sock, buff, strlen(buff), 0);
@@ -140,6 +219,15 @@ int main(int argc, char *argv[])
 
             buff[received_bytes] = '\0';
             printf("Reply from server: %s", buff);
+            if(strncmp(buff, "RETR", 4) == 0){
+
+                char filename[100];
+                unsigned int size;
+                sscanf(buff, "RETR %s %ld", filename, &size);
+                printf("%s | %ld\n", filename, size);
+                store(client_sock, filename, size);
+            }
+            log_response(buff);
         }
     }
     // Step 4: Close socket
